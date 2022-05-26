@@ -16,12 +16,16 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(404).send({ message: 'Некорректно указан ID пользователя' }));
+    .catch(() => res.status(400).send({ message: 'Некорректно указан ID пользователя' }));
 };
 
 module.exports.editProfile = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, about })
+  User.findByIdAndUpdate(req.user._id, { name, about }, {
+    new: true,
+    runValidators: true,
+    upsert: false,
+  })
     .then((user) => res.send({ updatedUser: user }))
     .catch(() => res.status(400).send({ message: 'Для обновления данных о пользователе переданы некорректные данные' }));
 };
