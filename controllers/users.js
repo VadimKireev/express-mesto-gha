@@ -32,7 +32,11 @@ module.exports.editProfile = (req, res) => {
 
 module.exports.editAvatar = (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar })
+  User.findByIdAndUpdate(req.user._id, { avatar }, {
+    new: true,
+    runValidators: true,
+    upsert: false,
+  })
     .then((newAvatarLink) => res.send({ updatedAvatar: newAvatarLink }))
     .catch(() => res.status(400).send({ message: 'Для обновления данных о пользователе переданы некорректные данные' }));
 };

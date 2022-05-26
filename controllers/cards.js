@@ -17,7 +17,7 @@ module.exports.getCards = (req, res) => {
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(404).send({ message: 'Некорректно указан ID карточки' }));
+    .catch(() => res.status(400).send({ message: 'Некорректно указан ID карточки' }));
 };
 
 module.exports.putLike = (req, res) => {
@@ -27,7 +27,7 @@ module.exports.putLike = (req, res) => {
     { new: true },
   )
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(500).send({ message: 'Ошибка на стороне сервера' }));
+    .catch(() => res.status(400).send({ message: 'Ошибка на стороне сервера' }));
 };
 
 module.exports.deleteLike = (req, res) => {
@@ -37,5 +37,5 @@ module.exports.deleteLike = (req, res) => {
     { new: true },
   )
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(500).send({ message: 'Ошибка на стороне сервера' }));
+    .catch(() => res.status(400).send({ message: 'Ошибка на стороне сервера' }));
 };
