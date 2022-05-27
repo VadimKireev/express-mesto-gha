@@ -16,7 +16,13 @@ module.exports.getCards = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (!card) {
+        res.status(404).send({ message: 'Карточка не найдена' });
+        return;
+      }
+      res.send({ data: card });
+    })
     .catch(() => res.status(400).send({ message: 'Некорректно указан ID карточки' }));
 };
 
@@ -26,8 +32,14 @@ module.exports.putLike = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => res.send({ data: card }))
-    .catch(() => res.status(400).send({ message: 'Ошибка на стороне сервера' }));
+    .then((card) => {
+      if (!card) {
+        res.status(404).send({ message: 'Карточка не найдена' });
+        return;
+      }
+      res.send({ data: card });
+    })
+    .catch(() => res.status(400).send({ message: 'Некорректно указан ID карточки' }));
 };
 
 module.exports.deleteLike = (req, res) => {
@@ -36,6 +48,12 @@ module.exports.deleteLike = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => res.send({ data: card }))
-    .catch(() => res.status(400).send({ message: 'Ошибка на стороне сервера' }));
+    .then((card) => {
+      if (!card) {
+        res.status(404).send({ message: 'Карточка не найдена' });
+        return;
+      }
+      res.send({ data: card });
+    })
+    .catch(() => res.status(400).send({ message: 'Некорректно указан ID карточки' }));
 };
