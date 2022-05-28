@@ -4,13 +4,19 @@ module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(400).send({ message: 'Для создания пользователя переданы некорректные данные' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Для создания пользователя переданы некорректные данные' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ usersList: users }))
-    .catch(() => res.status(404).send({ message: 'Пользователи не найдены' }));
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.getUser = (req, res) => {
@@ -22,7 +28,13 @@ module.exports.getUser = (req, res) => {
       }
       res.send({ data: user });
     })
-    .catch(() => res.status(400).send({ message: 'Некорректно указан ID пользователя' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Некорректно указан ID пользователя' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.editProfile = (req, res) => {
@@ -33,7 +45,13 @@ module.exports.editProfile = (req, res) => {
     upsert: false,
   })
     .then((user) => res.send({ updatedUser: user }))
-    .catch(() => res.status(400).send({ message: 'Для обновления данных о пользователе переданы некорректные данные' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Для обновления информации о пользователе переданы некорректные данные' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.editAvatar = (req, res) => {
@@ -44,5 +62,11 @@ module.exports.editAvatar = (req, res) => {
     upsert: false,
   })
     .then((newAvatarLink) => res.send({ updatedAvatar: newAvatarLink }))
-    .catch(() => res.status(400).send({ message: 'Для обновления данных о пользователе переданы некорректные данные' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Для обновления информации о пользователе переданы некорректные данные' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };

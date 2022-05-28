@@ -1,17 +1,22 @@
 const Card = require('../models/card');
 
 module.exports.postCard = (req, res) => {
-  console.log(req.user._id);
   const { name, link, owner = req.user._id } = req.body;
   Card.create({ name, link, owner })
     .then((card) => res.send({ data: card }))
-    .catch(() => res.status(400).send({ message: 'Для создания карточки переданы некорректные данные' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Для создания карточки переданы некорректные данные' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ cardsList: cards }))
-    .catch(() => res.status(404).send({ message: 'Карточки не найдены' }));
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.deleteCard = (req, res) => {
@@ -23,7 +28,13 @@ module.exports.deleteCard = (req, res) => {
       }
       res.send({ data: card });
     })
-    .catch(() => res.status(400).send({ message: 'Некорректно указан ID карточки' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Некорректно указан ID карточки' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.putLike = (req, res) => {
@@ -39,7 +50,13 @@ module.exports.putLike = (req, res) => {
       }
       res.send({ data: card });
     })
-    .catch(() => res.status(400).send({ message: 'Некорректно указан ID карточки' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Некорректно указан ID карточки' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports.deleteLike = (req, res) => {
@@ -55,5 +72,11 @@ module.exports.deleteLike = (req, res) => {
       }
       res.send({ data: card });
     })
-    .catch(() => res.status(400).send({ message: 'Некорректно указан ID карточки' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Некорректно указан ID карточки' });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
