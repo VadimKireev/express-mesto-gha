@@ -6,7 +6,7 @@ const {
   validateGetUser, validateEditProfile, validateEditAvatar,
 } = require('../middlewares/validations');
 
-router.get('/', validateGetUser, getUsers);
+router.get('/', getUsers);
 router.get('/all/:userId', validateGetUser, getUser);
 router.get('/me', getMyInfo);
 router.patch('/me', validateEditProfile, editProfile);

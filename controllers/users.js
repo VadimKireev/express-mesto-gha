@@ -15,7 +15,12 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send({
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+    }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new ValidationError('Переданы некорректные данные'));
@@ -32,7 +37,7 @@ module.exports.login = (req, res, next) => {
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь не найден');
+        throw new AuthError('Не правильный логин или пароль');
       }
       bcrypt.compare(password, user.password)
         .then((matched) => {
@@ -47,7 +52,7 @@ module.exports.login = (req, res, next) => {
         }).catch((err) => next(err));
     })
     .catch((err) => {
-      if (err.name === 'NotFoundError') {
+      if (err.name === 'AuthError') {
         return next(err);
       }
       return next(new CommonError('Что-то пошло не так'));
