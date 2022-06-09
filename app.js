@@ -19,8 +19,9 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 app.post('/signin', validateLogin, login);
 app.post('/signup', validateCreateUser, createUser);
 
-app.use('/users', auth, require('./routes/users'));
-app.use('/cards', auth, require('./routes/cards'));
+app.use(auth);
+app.use('/users', require('./routes/users'));
+app.use('/cards', require('./routes/cards'));
 
 app.use('*', (req, res) => res.status(404).send({ message: 'Запрашиваемая страница не найдена' }));
 
