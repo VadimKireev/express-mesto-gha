@@ -5,7 +5,7 @@ const {
 const { validatePostCard, validateCardId } = require('../middlewares/validations');
 
 router.post('/', validatePostCard, postCard);
-router.get('/', validateCardId, getCards);
+router.get('/', getCards);
 router.delete('/:cardId', validateCardId, deleteCard);
 router.put('/:cardId/likes', validateCardId, putLike);
 router.delete('/:cardId/likes', validateCardId, deleteLike);
