@@ -7,6 +7,8 @@ const SameEmailError = require('../errors/SameEmailError');
 const NotFoundError = require('../errors/NotFoundError');
 const AuthError = require('../errors/AuthError');
 
+const secretCode = 'bc3c4cc2fa303dd0d4825cdf1d396e84bfb71fd28b9ad7c26eb4a82b7f861697';
+
 module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email,
@@ -44,11 +46,12 @@ module.exports.login = (req, res, next) => {
           if (!matched) {
             throw new AuthError('Не правильный логин или пароль');
           }
-          const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+          const token = jwt.sign({ _id: user._id }, secretCode, { expiresIn: '7d' });
           res.cookie('jwt', token, {
             maxAge: 3600000,
             httpOnly: true,
-          }).end();
+          });
+          res.send({ message: 'Успешный вход' });
         }).catch((err) => next(err));
     })
     .catch((err) => {
