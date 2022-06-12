@@ -2,10 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { validateCreateUser, validateLogin } = require('./middlewares/validations');
+const NotFoundError = require('./errors/NotFoundError');
 
 const app = express();
 
@@ -13,6 +15,8 @@ const { PORT = 3000 } = process.env;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(cookieParser());
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
@@ -22,13 +26,15 @@ app.post('/signup', validateCreateUser, createUser);
 app.use('/users', auth, require('./routes/users'));
 app.use('/cards', auth, require('./routes/cards'));
 
-app.use('*', (req, res) => res.status(404).send({ message: 'Запрашиваемая страница не найдена' }));
+app.use('*', auth, (req, res, next) => next(new NotFoundError('Запрашиваемая страница не найдена')));
 
 app.use(errors());
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
-  res.status(err.statusCode).send({ message: err.message });
+  const statusCode = err.statusCode || 500;
+  const message = statusCode === 500 ? 'На сервере произошла ошибка' : err.message;
+  res.status(statusCode).send({ message });
 });
 
 app.listen(PORT);
