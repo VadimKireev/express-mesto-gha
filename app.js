@@ -7,6 +7,7 @@ const { errors } = require('celebrate');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const { validateCreateUser, validateLogin } = require('./middlewares/validations');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const NotFoundError = require('./errors/NotFoundError');
 
 const app = express();
@@ -20,6 +21,8 @@ app.use(cookieParser());
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
+app.use(requestLogger);
+
 app.post('/signin', validateLogin, login);
 app.post('/signup', validateCreateUser, createUser);
 
@@ -27,6 +30,8 @@ app.use('/users', auth, require('./routes/users'));
 app.use('/cards', auth, require('./routes/cards'));
 
 app.use('*', auth, (req, res, next) => next(new NotFoundError('Запрашиваемая страница не найдена')));
+
+app.use(errorLogger);
 
 app.use(errors());
 
